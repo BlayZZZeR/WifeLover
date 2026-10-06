@@ -168,7 +168,7 @@ function App() {
             <div className="photo-frame">
               <div className="photo-container">
                 <img
-                  src="/images/love-photo.jpg"
+                  src={`${import.meta.env.BASE_URL}images/love-photo.jpg`}
                   alt="Наша любовь"
                   className="photo-img"
                   onError={(e) => {
