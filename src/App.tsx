@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Environment } from '@react-three/drei';
+import { Float, Environment, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import confetti from 'canvas-confetti';
 import { TypeAnimation } from 'react-type-animation';
@@ -8,85 +8,217 @@ import './index.css';
 
 type AppState = 'closed' | 'opening' | 'revealed';
 
-// ================ 3D СЕРДЦЕ ================
-function Heart3D({ state, onOpen }: { state: AppState; onOpen: () => void }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const isOpen = state !== 'closed';
+// ================ ФОРМА СЕРДЦА ================
+function createHeartShape() {
+  const shape = new THREE.Shape();
+  const x = 0, y = 0;
+  shape.moveTo(x + 0.5, y + 0.5);
+  shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+  shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+  shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
+  shape.bezierCurveTo(x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+  shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
+  shape.bezierCurveTo(x + 0.7, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+  return shape;
+}
 
-  // Создаём объёмное сердце на основе кривых Безье
-  const geometry = useMemo(() => {
-    const shape = new THREE.Shape();
-    const x = 0, y = 0;
-    shape.moveTo(x + 0.5, y + 0.5);
-    shape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
-    shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
-    shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
-    shape.bezierCurveTo(x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
-    shape.bezierCurveTo(x + 1.6, y + 0.7, x + 1.6, y, x + 1, y);
-    shape.bezierCurveTo(x + 0.7, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
-
-    const geo = new THREE.ExtrudeGeometry(shape, {
+// ================ 3D МЕДАЛЬОН ================
+function HeartLocket({ state, onOpen }: { state: AppState; onOpen: () => void }) {
+  const lidRef = useRef<THREE.Group>(null);
+  const contentRef = useRef<THREE.Group>(null);
+  
+  const heartShape = useMemo(() => createHeartShape(), []);
+  
+  // Геометрия основы (задняя часть медальона)
+  const baseGeometry = useMemo(() => {
+    const geo = new THREE.ExtrudeGeometry(heartShape, {
       depth: 0.6,
       bevelEnabled: true,
       bevelSegments: 16,
-      bevelSize: 0.2,
-      bevelThickness: 0.2,
+      bevelSize: 0.15,
+      bevelThickness: 0.15,
       curveSegments: 32,
     });
     geo.center();
     return geo;
+  }, [heartShape]);
+
+  // Геометрия крышки (чуть тоньше)
+  const lidGeometry = useMemo(() => {
+    const geo = new THREE.ExtrudeGeometry(heartShape, {
+      depth: 0.4,
+      bevelEnabled: true,
+      bevelSegments: 16,
+      bevelSize: 0.15,
+      bevelThickness: 0.15,
+      curveSegments: 32,
+    });
+    geo.center();
+    return geo;
+  }, [heartShape]);
+
+  // Загружаем фото
+  const texture = useTexture(`${import.meta.env.BASE_URL}images/love-photo.jpg`);
+
+  // Анимация
+  useFrame((_, delta) => {
+    const lid = lidRef.current;
+    const content = contentRef.current;
+    if (!lid || !content) return;
+
+    const isOpen = state !== 'closed';
+    
+    // Плавное открытие крышки
+    const targetRotation = isOpen ? -Math.PI * 1.15 : 0;
+    lid.rotation.y += (targetRotation - lid.rotation.y) * Math.min(1, delta * 3.5);
+
+    // Плавное появление содержимого
+    const targetOpacity = isOpen ? 1 : 0;
+    const targetScale = isOpen ? 1 : 0.5;
+    if (content) {
+      content.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), Math.min(1, delta * 3));
+      content.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh && (child as any).material) {
+          (child as any).material.opacity += (targetOpacity - (child as any).material.opacity) * Math.min(1, delta * 3);
+          (child as any).material.transparent = true;
+        }
+      });
+    }
+  });
+
+  // Маленькие сердечки внутри
+  const smallHearts = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      position: [
+        (Math.random() - 0.5) * 0.8,
+        (Math.random() - 0.5) * 0.8,
+        (Math.random() - 0.5) * 0.3 + 0.15,
+      ] as [number, number, number],
+      scale: Math.random() * 0.15 + 0.1,
+      color: ['#ff2e63', '#ff0040', '#c44569', '#e11d48'][Math.floor(Math.random() * 4)],
+      speed: Math.random() * 2 + 1,
+      offset: Math.random() * Math.PI * 2,
+    }));
   }, []);
 
-  useFrame((_, delta) => {
-    const g = groupRef.current;
-    if (!g) return;
-
-    if (!isOpen) {
-      g.scale.setScalar(1);
-      g.visible = true;
-      g.rotation.y += delta * 0.7;
-    } else {
-      g.rotation.y += delta * 10;
-      g.scale.multiplyScalar(Math.max(0, 1 - delta * 2.5));
-      if (g.scale.x < 0.02) g.visible = false;
+  const heartsGroupRef = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (heartsGroupRef.current) {
+      heartsGroupRef.current.children.forEach((child, i) => {
+        const data = smallHearts[i];
+        if (data) {
+          child.position.y = data.position[1] + Math.sin(clock.elapsedTime * data.speed + data.offset) * 0.05;
+        }
+      });
     }
   });
 
   return (
-    <group ref={groupRef}>
-      <Float speed={1.5} rotationIntensity={0.4} floatIntensity={0.8}>
-        <mesh
-          geometry={geometry}
-          onClick={onOpen}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
-        >
-          <meshPhysicalMaterial
-            color="#ff2e63"
-            emissive="#ff0040"
-            emissiveIntensity={0.35}
-            metalness={0.5}
-            roughness={0.1}
-            clearcoat={1}
-            clearcoatRoughness={0.05}
-            reflectivity={1}
-          />
+    <group scale={[1.6, 1.6, 1.6]}>
+      {/* ЗАДНЯЯ ЧАСТЬ МЕДАЛЬОНА */}
+      <mesh geometry={baseGeometry} position={[0, 0, -0.3]}>
+        <meshPhysicalMaterial
+          color="#b3001b"
+          metalness={0.85}
+          roughness={0.15}
+          clearcoat={1}
+          clearcoatRoughness={0.05}
+          reflectivity={0.8}
+        />
+      </mesh>
+
+      {/* ЗЕРКАЛЬНАЯ ВНУТРЕННЯЯ ПОВЕРХНОСТЬ */}
+      <mesh position={[0, 0, -0.05]}>
+        <planeGeometry args={[2.2, 2.2]} />
+        <meshPhysicalMaterial
+          color="#ffffff"
+          metalness={1}
+          roughness={0.05}
+          envMapIntensity={2}
+        />
+      </mesh>
+
+      {/* СОДЕРЖИМОЕ (ФОТО + СЕРДЕЧКИ) */}
+      <group ref={contentRef} position={[0, 0, 0.1]}>
+        {/* Фото */}
+        <mesh position={[0, 0, -0.1]}>
+          <planeGeometry args={[1.6, 1.6]} />
+          <meshBasicMaterial map={texture} transparent opacity={0} />
         </mesh>
-      </Float>
+        
+        {/* Маленькие 3D сердечки */}
+        <group ref={heartsGroupRef}>
+          {smallHearts.map((h) => (
+            <mesh
+              key={h.id}
+              geometry={baseGeometry}
+              position={h.position}
+              scale={h.scale}
+            >
+              <meshPhysicalMaterial
+                color={h.color}
+                metalness={0.6}
+                roughness={0.2}
+                transparent
+                opacity={0}
+              />
+            </mesh>
+          ))}
+        </group>
+      </group>
+
+      {/* КРЫШКА (открывается влево) */}
+      <group position={[-1.05, 0, 0.3]}>
+        <group ref={lidRef}>
+          <mesh geometry={lidGeometry} position={[1.05, 0, 0]}>
+            <meshPhysicalMaterial
+              color="#d90429"
+              metalness={0.9}
+              roughness={0.1}
+              clearcoat={1}
+              clearcoatRoughness={0.05}
+              envMapIntensity={1.5}
+            />
+          </mesh>
+          
+          {/* Золотая окантовка на крышке */}
+          <mesh geometry={lidGeometry} position={[1.05, 0, 0]} scale={[1.02, 1.02, 0.5]}>
+            <meshPhysicalMaterial
+              color="#ffd700"
+              metalness={1}
+              roughness={0.2}
+              transparent
+              opacity={0.4}
+            />
+          </mesh>
+
+          {/* Замок-замочек */}
+          <mesh position={[1.05, -0.7, 0.4]}>
+            <sphereGeometry args={[0.12, 16, 16]} />
+            <meshPhysicalMaterial color="#ffd700" metalness={1} roughness={0.1} />
+          </mesh>
+        </group>
+      </group>
     </group>
   );
 }
 
-// ================ 3D СЦЕНА ================
+// ================ СЦЕНА ================
 function Scene({ state, onOpen }: { state: AppState; onOpen: () => void }) {
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[5, 5, 5]} intensity={1.2} color="#ffd0e0" />
-      <directionalLight position={[-5, -3, 5]} intensity={0.6} color="#ff8ab8" />
-      <pointLight position={[0, 0, 3]} intensity={1} color="#ff3060" />
-      <Heart3D state={state} onOpen={onOpen} />
-      <Environment preset="sunset" />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+      <directionalLight position={[-5, 3, 5]} intensity={0.8} color="#ffb3c6" />
+      <pointLight position={[0, 0, 3]} intensity={1.5} color="#ff4757" />
+      <pointLight position={[0, 0, -3]} intensity={0.5} color="#ffd700" />
+      
+      <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.5}>
+        <HeartLocket state={state} onOpen={onOpen} />
+      </Float>
+      
+      <Environment preset="studio" />
     </>
   );
 }
@@ -101,7 +233,6 @@ function App() {
     if (state !== 'closed') return;
     setState('opening');
 
-    // Музыка
     if (audioRef.current) {
       audioRef.current.volume = 0.5;
       audioRef.current.play()
@@ -109,18 +240,16 @@ function App() {
         .catch(e => console.log("Автовоспроизведение заблокировано:", e));
     }
 
-    // Конфетти через секунду
     setTimeout(() => {
       confetti({
-        particleCount: 180,
-        spread: 90,
+        particleCount: 200,
+        spread: 100,
         origin: { y: 0.55 },
         colors: ['#ff6b9d', '#ffa8cc', '#ff4757', '#ffd32a', '#ff9ff3'],
       });
-    }, 900);
+    }, 1000);
 
-    // Показываем текст через 1.8 секунды
-    setTimeout(() => setState('revealed'), 1800);
+    setTimeout(() => setState('revealed'), 2500);
   };
 
   const handleReset = () => {
@@ -211,10 +340,9 @@ function App() {
           </h1>
         )}
 
-        {/* 3D Сцена */}
         <div className={`canvas-wrapper ${state !== 'closed' ? 'shrunk' : ''}`}>
           <Canvas
-            camera={{ position: [0, 0, 4.5], fov: 45 }}
+            camera={{ position: [0, 0, 5], fov: 45 }}
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true }}
           >
@@ -228,32 +356,6 @@ function App() {
 
         {state === 'revealed' && (
           <div className="revealed-content">
-            {/* Фото в форме сердца */}
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-              <defs>
-                <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
-                  <path d="M0.5 0.9 C0.3 0.7, 0.05 0.6, 0.05 0.4 C0.05 0.2, 0.25 0.1, 0.375 0.2 C0.425 0.24, 0.475 0.3, 0.5 0.35 C0.525 0.3, 0.575 0.24, 0.625 0.2 C0.75 0.1, 0.95 0.2, 0.95 0.4 C0.95 0.6, 0.7 0.7, 0.5 0.9Z" />
-                </clipPath>
-              </defs>
-            </svg>
-
-            <div className="photo-heart">
-              <img
-                src={`${import.meta.env.BASE_URL}images/love-photo.jpg`}
-                alt="Наша любовь"
-                className="photo-heart-img"
-                onError={(e) => {
-                  const t = e.target as HTMLImageElement;
-                  t.style.display = 'none';
-                  if (t.parentElement) {
-                    t.parentElement.innerHTML = '<div class="photo-fallback-heart">💑</div>';
-                  }
-                }}
-              />
-            </div>
-
-            <p className="photo-caption">Наш особенный момент ✨</p>
-
             <h2 className="love-title shimmer-text">Моя любимая! 💕</h2>
 
             <TypeAnimation
