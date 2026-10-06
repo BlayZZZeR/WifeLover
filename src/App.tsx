@@ -1,15 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import './index.css';
 
 function App() {
   const [isOpened, setIsOpened] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleHeartClick = () => {
     if (isOpened || isOpening) return;
     
     setIsOpening(true);
+    
+    // Запускаем музыку
+    if (audioRef.current) {
+      audioRef.current.volume = 0.5; // Громкость 50%
+      audioRef.current.play().catch(e => console.log("Автовоспроизведение заблокировано браузером:", e));
+    }
     
     setTimeout(() => {
       setIsOpened(true);
@@ -28,6 +35,11 @@ function App() {
   const handleReset = () => {
     setIsOpened(false);
     setIsOpening(false);
+    // Останавливаем музыку при сбросе
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   };
 
   // Generate floating hearts
@@ -50,6 +62,9 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Фоновая музыка (положите файл music.mp3 в папку public) */}
+      <audio ref={audioRef} src={`${import.meta.env.BASE_URL}music.mp3`} loop />
+      
       <div className="bg-glow"></div>
       
       {/* Floating hearts */}
@@ -158,9 +173,11 @@ function App() {
               <div className="deco-heart deco-heart-tr">💖</div>
               <div className="deco-heart deco-heart-bl">💖</div>
               <div className="deco-heart deco-heart-br">💖</div>
+              
+              {/* Подпись под фото */}
+              <p className="photo-caption">Наш особенный момент ✨</p>
             </div>
 
-            {/* Текст можно поменять здесь */}
             <h2 className="love-title shimmer-text">Моя любимая! 💕</h2>
 
             <p className="love-message love-message-delay-1">
