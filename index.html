@@ -7,7 +7,11 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 100%; height: 100%; overflow: hidden; }
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        /* Кастомный курсор-сердечко */
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff6b9d" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
+      }
       #root { width: 100%; height: 100%; }
 
       .app-container {
@@ -59,7 +63,8 @@
       .heart-button {
         position: relative; cursor: pointer;
         background: none; border: none; outline: none; padding: 0;
-        perspective: 1000px; /* Добавлено для 3D */
+        perspective: 1000px;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="%23ff4757" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), pointer;
       }
       .heart-button:focus { outline: none; }
       .heart-glow {
@@ -72,11 +77,10 @@
         width: 192px; height: 192px;
         filter: drop-shadow(0 25px 25px rgba(0,0,0,0.15));
         transition: all 0.3s;
-        transform-style: preserve-3d; /* Добавлено для 3D */
+        transform-style: preserve-3d;
       }
       @media (min-width: 768px) { .heart-svg { width: 256px; height: 256px; } }
       
-      /* Обновленная анимация с 3D */
       .heart-pulse { 
         animation: heartbeat 1.5s ease-in-out infinite, rotate3d 4s infinite ease-in-out; 
       }
@@ -120,12 +124,20 @@
         50% { transform: scale(1.1) rotateY(0deg); }
         100% { opacity: 1; transform: scale(1) rotateY(0deg); }
       }
-      .photo-frame { position: relative; margin-bottom: 2rem; }
+      .photo-frame { position: relative; margin-bottom: 2rem; perspective: 1000px; }
+      
+      /* 3D эффект для фото */
       .photo-container {
         border-radius: 1rem; overflow: hidden; border: 4px solid #fbcfe8;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         animation: glowPulse 2s ease-in-out infinite;
+        transition: transform 0.3s ease;
+        transform-style: preserve-3d;
       }
+      .photo-frame:hover .photo-container {
+        transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+      }
+      
       @keyframes glowPulse {
         0%, 100% { box-shadow: 0 0 20px rgba(255,105,180,0.3), 0 0 40px rgba(255,105,180,0.2), 0 0 60px rgba(255,105,180,0.1); }
         50% { box-shadow: 0 0 30px rgba(255,105,180,0.5), 0 0 60px rgba(255,105,180,0.3), 0 0 90px rgba(255,105,180,0.2); }
@@ -138,6 +150,19 @@
         display: flex; align-items: center; justify-content: center; font-size: 4rem;
       }
       @media (min-width: 768px) { .photo-fallback { width: 384px; height: 288px; } }
+      
+      /* Стиль для подписи под фото */
+      .photo-caption {
+        margin-top: 1rem;
+        color: #fbcfe8;
+        font-size: 0.875rem;
+        font-style: italic;
+        opacity: 0.8;
+        animation: fadeInUp 1s ease-out forwards;
+        animation-delay: 0.5s;
+        opacity: 0;
+      }
+      
       .deco-heart { position: absolute; font-size: 1.5rem; animation: bounce 1s infinite; }
       .deco-heart-tl { top: -16px; left: -16px; }
       .deco-heart-tr { top: -16px; right: -16px; animation-delay: 0.2s; }
@@ -176,6 +201,7 @@
         cursor: pointer; transition: all 0.3s;
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         opacity: 0; animation: fadeInUp 0.8s ease-out forwards; animation-delay: 2s;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), pointer;
       }
       .reset-button:hover {
         background: linear-gradient(to right, #db2777, #be123c);
@@ -183,12 +209,6 @@
         box-shadow: 0 10px 15px -3px rgba(236,72,153,0.5);
       }
       .reset-button:active { transform: scale(0.95); }
-      .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
-      .confetti { position: absolute; border-radius: 50%; animation: confettiBurst 1.5s ease-out forwards; }
-      @keyframes confettiBurst {
-        0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-        100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
-      }
     </style>
   </head>
   <body>
