@@ -5,6 +5,7 @@ import './index.css';
 function App() {
   const [isOpened, setIsOpened] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleHeartClick = () => {
@@ -15,7 +16,9 @@ function App() {
     // Запускаем музыку
     if (audioRef.current) {
       audioRef.current.volume = 0.5; // Громкость 50%
-      audioRef.current.play().catch(e => console.log("Автовоспроизведение заблокировано браузером:", e));
+      audioRef.current.play()
+        .then(() => setIsMusicPlaying(true))
+        .catch(e => console.log("Автовоспроизведение заблокировано браузером:", e));
     }
     
     setTimeout(() => {
@@ -32,6 +35,20 @@ function App() {
     }, 800);
   };
 
+  // Переключение музыки (пауза / воспроизведение)
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+    
+    if (isMusicPlaying) {
+      audioRef.current.pause();
+      setIsMusicPlaying(false);
+    } else {
+      audioRef.current.play()
+        .then(() => setIsMusicPlaying(true))
+        .catch(e => console.log("Ошибка воспроизведения:", e));
+    }
+  };
+
   const handleReset = () => {
     setIsOpened(false);
     setIsOpening(false);
@@ -39,6 +56,7 @@ function App() {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      setIsMusicPlaying(false);
     }
   };
 
@@ -66,6 +84,18 @@ function App() {
       <audio ref={audioRef} src={`${import.meta.env.BASE_URL}music.mp3`} loop />
       
       <div className="bg-glow"></div>
+      
+      {/* Кнопка управления музыкой (появляется после открытия сердца) */}
+      {isOpened && (
+        <button 
+          onClick={toggleMusic} 
+          className="music-button"
+          aria-label={isMusicPlaying ? "Пауза" : "Играть"}
+          title={isMusicPlaying ? "Пауза" : "Играть"}
+        >
+          {isMusicPlaying ? '⏸️' : '▶️'}
+        </button>
+      )}
       
       {/* Floating hearts */}
       <div className="floating-hearts">
