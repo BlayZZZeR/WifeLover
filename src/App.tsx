@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import confetti from 'canvas-confetti';
 import './index.css';
 
 function App() {
   const [isOpened, setIsOpened] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
 
   const handleHeartClick = () => {
     if (isOpened || isOpening) return;
@@ -12,14 +12,17 @@ function App() {
     setIsOpening(true);
     
     setTimeout(() => {
-      setShowConfetti(true);
       setIsOpened(true);
       setIsOpening(false);
+      
+      // Запускаем красивое конфетти из библиотеки
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ff6b9d', '#ffa8cc', '#ff4757', '#ffd32a', '#ff9ff3']
+      });
     }, 800);
-    
-    setTimeout(() => {
-      setShowConfetti(false);
-    }, 2500);
   };
 
   const handleReset = () => {
@@ -44,33 +47,6 @@ function App() {
     size: Math.random() * 10 + 5,
     delay: Math.random() * 3,
   }));
-
-  // Generate confetti
-  const confetti = showConfetti ? Array.from({ length: 30 }, (_, i) => {
-    const angle = (i / 30) * 360;
-    const distance = Math.random() * 300 + 100;
-    const tx = Math.cos((angle * Math.PI) / 180) * distance;
-    const ty = Math.sin((angle * Math.PI) / 180) * distance;
-    const colors = ['#ff6b9d', '#ffa8cc', '#ff4757', '#ff6348', '#ffd32a', '#ff9ff3'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const size = Math.random() * 10 + 5;
-    
-    return (
-      <div
-        key={i}
-        className="confetti"
-        style={{
-          left: '50%',
-          top: '50%',
-          width: `${size}px`,
-          height: `${size}px`,
-          backgroundColor: color,
-          '--tx': `${tx}px`,
-          '--ty': `${ty}px`,
-        } as React.CSSProperties}
-      />
-    );
-  }) : null;
 
   return (
     <div className="app-container">
@@ -111,9 +87,6 @@ function App() {
           </div>
         ))}
       </div>
-
-      {/* Confetti */}
-      {showConfetti && <div className="confetti-container">{confetti}</div>}
 
       {/* Main content */}
       <div className="content-wrapper">
@@ -187,6 +160,7 @@ function App() {
               <div className="deco-heart deco-heart-br">💖</div>
             </div>
 
+            {/* Текст можно поменять здесь */}
             <h2 className="love-title shimmer-text">Моя любимая! 💕</h2>
 
             <p className="love-message love-message-delay-1">
