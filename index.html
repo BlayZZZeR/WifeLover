@@ -27,7 +27,7 @@
       
       /* Кнопка управления музыкой */
       .music-button {
-        position: fixed;
+        position: absolute;
         top: 20px;
         right: 20px;
         width: 50px;
@@ -37,17 +37,14 @@
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 2px solid rgba(251, 207, 232, 0.5);
-        color: white;
-        font-size: 1.25rem;
-        cursor: pointer;
-        z-index: 100;
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 999;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         animation: fadeInUp 0.5s ease-out forwards;
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), pointer;
+        cursor: pointer;
       }
       .music-button:hover {
         background: rgba(255, 255, 255, 0.25);
@@ -208,30 +205,28 @@
         font-family: Georgia, serif; font-style: italic;
       }
       @media (min-width: 768px) { .love-title { font-size: 2.5rem; } }
+      
+      /* Стили для текста (печатная машинка) */
       .love-message {
         color: #fce7f3; font-size: 1.125rem; margin-bottom: 0.75rem; line-height: 1.75;
-        opacity: 0; animation: fadeInUp 0.8s ease-out forwards;
+        min-height: 1.75em; /* Чтобы текст не прыгал, пока печатается */
       }
       @media (min-width: 768px) { .love-message { font-size: 1.25rem; } }
-      .love-message-delay-1 { animation-delay: 0.8s; }
-      .love-message-delay-2 { animation-delay: 1.2s; }
-      @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(30px); }
-        100% { opacity: 1; transform: translateY(0); }
-      }
+      
       .love-message-final {
         color: #fce7f3; font-size: 1.25rem; margin-bottom: 2rem;
         font-family: Georgia, serif; font-style: italic;
-        opacity: 0; animation: fadeInUp 0.8s ease-out forwards; animation-delay: 1.6s;
+        min-height: 1.75em;
       }
       @media (min-width: 768px) { .love-message-final { font-size: 1.5rem; } }
+      
       .reset-button {
         margin-top: 1rem; padding: 0.75rem 1.5rem;
         background: linear-gradient(to right, #ec4899, #e11d48);
         color: white; border: none; border-radius: 9999px; font-size: 1rem;
         cursor: pointer; transition: all 0.3s;
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        opacity: 0; animation: fadeInUp 0.8s ease-out forwards; animation-delay: 2s;
+        opacity: 0; animation: fadeInUp 0.8s ease-out forwards; animation-delay: 4s; /* Задержка, чтобы кнопка появилась после текста */
         cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), pointer;
       }
       .reset-button:hover {
@@ -241,14 +236,17 @@
       }
       .reset-button:active { transform: scale(0.95); }
       
-      /* Адаптация для мобильных */
+      @keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      
       @media (max-width: 600px) {
         .music-button {
           width: 42px;
           height: 42px;
           top: 12px;
           right: 12px;
-          font-size: 1rem;
         }
       }
     </style>
