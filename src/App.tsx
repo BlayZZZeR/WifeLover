@@ -146,6 +146,14 @@ function RevealedContent({ onReset }: { onReset: () => void }) {
             src="https://image.qwenlm.ai/generated-images/9311da62-5664-4c75-a6e1-442b1a066d6e/_result.png"
             alt="Наша любовь"
             className="w-72 h-56 md:w-96 md:h-72 object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                parent.innerHTML = '<div class="w-72 h-56 md:w-96 md:h-72 bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-6xl">💑</div>';
+              }
+            }}
           />
         </div>
         {/* Decorative hearts around photo */}
@@ -237,7 +245,19 @@ function App() {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 flex items-center justify-center relative overflow-hidden">
+    <div
+      className="w-full h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 flex items-center justify-center relative overflow-hidden"
+      style={{
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(to bottom right, #581c87, #831843, #881337)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       {/* Background effects */}
       <FloatingHearts />
       <Sparkles />
