@@ -9,7 +9,6 @@
       html, body { width: 100%; height: 100%; overflow: hidden; }
       body { 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        /* Кастомный курсор-сердечко */
         cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff6b9d" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
       }
       #root { width: 100%; height: 100%; }
@@ -25,6 +24,41 @@
         background: radial-gradient(ellipse at center, rgba(255,105,180,0.15) 0%, transparent 70%);
         pointer-events: none;
       }
+      
+      /* Кнопка управления музыкой */
+      .music-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px solid rgba(251, 207, 232, 0.5);
+        color: white;
+        font-size: 1.25rem;
+        cursor: pointer;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 0.5s ease-out forwards;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), pointer;
+      }
+      .music-button:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.1);
+        border-color: rgba(251, 207, 232, 0.9);
+        box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+      }
+      .music-button:active {
+        transform: scale(0.95);
+      }
+      
       .floating-hearts, .sparkles {
         position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
       }
@@ -126,7 +160,6 @@
       }
       .photo-frame { position: relative; margin-bottom: 2rem; perspective: 1000px; }
       
-      /* 3D эффект для фото */
       .photo-container {
         border-radius: 1rem; overflow: hidden; border: 4px solid #fbcfe8;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
@@ -151,16 +184,14 @@
       }
       @media (min-width: 768px) { .photo-fallback { width: 384px; height: 288px; } }
       
-      /* Стиль для подписи под фото */
       .photo-caption {
         margin-top: 1rem;
         color: #fbcfe8;
         font-size: 0.875rem;
         font-style: italic;
-        opacity: 0.8;
+        opacity: 0;
         animation: fadeInUp 1s ease-out forwards;
         animation-delay: 0.5s;
-        opacity: 0;
       }
       
       .deco-heart { position: absolute; font-size: 1.5rem; animation: bounce 1s infinite; }
@@ -209,6 +240,17 @@
         box-shadow: 0 10px 15px -3px rgba(236,72,153,0.5);
       }
       .reset-button:active { transform: scale(0.95); }
+      
+      /* Адаптация для мобильных */
+      @media (max-width: 600px) {
+        .music-button {
+          width: 42px;
+          height: 42px;
+          top: 12px;
+          right: 12px;
+          font-size: 1rem;
+        }
+      }
     </style>
   </head>
   <body>
