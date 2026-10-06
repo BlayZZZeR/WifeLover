@@ -59,6 +59,7 @@
       .heart-button {
         position: relative; cursor: pointer;
         background: none; border: none; outline: none; padding: 0;
+        perspective: 1000px; /* Добавлено для 3D */
       }
       .heart-button:focus { outline: none; }
       .heart-glow {
@@ -71,9 +72,14 @@
         width: 192px; height: 192px;
         filter: drop-shadow(0 25px 25px rgba(0,0,0,0.15));
         transition: all 0.3s;
+        transform-style: preserve-3d; /* Добавлено для 3D */
       }
       @media (min-width: 768px) { .heart-svg { width: 256px; height: 256px; } }
-      .heart-pulse { animation: heartbeat 1.5s ease-in-out infinite; }
+      
+      /* Обновленная анимация с 3D */
+      .heart-pulse { 
+        animation: heartbeat 1.5s ease-in-out infinite, rotate3d 4s infinite ease-in-out; 
+      }
       @keyframes heartbeat {
         0%, 100% { transform: scale(1); }
         10% { transform: scale(1.15); }
@@ -81,6 +87,14 @@
         30% { transform: scale(1.1); }
         40% { transform: scale(1); }
       }
+      @keyframes rotate3d {
+        0% { transform: rotateY(0deg) rotateX(0deg); }
+        25% { transform: rotateY(15deg) rotateX(5deg); }
+        50% { transform: rotateY(0deg) rotateX(0deg); }
+        75% { transform: rotateY(-15deg) rotateX(-5deg); }
+        100% { transform: rotateY(0deg) rotateX(0deg); }
+      }
+
       .heart-open { animation: heartOpen 1s ease-in-out forwards; }
       @keyframes heartOpen {
         0% { transform: scale(1); }
