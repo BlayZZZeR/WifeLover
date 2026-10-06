@@ -356,7 +356,7 @@ function App() {
 
         {state === 'revealed' && (
           <div className="revealed-content">
-            <h2 className="love-title shimmer-text">Моя любимая! 💕</h2>
+            <h2 className="love-title shimmer-text">Любовь моя! 💕</h2>
 
             <TypeAnimation
               sequence={['Ты — самое прекрасное, что случилось в моей жизни ✨']}
