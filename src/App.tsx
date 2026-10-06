@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import { TypeAnimation } from 'react-type-animation';
 import './index.css';
 
 function App() {
@@ -15,17 +16,16 @@ function App() {
     
     // Запускаем музыку
     if (audioRef.current) {
-      audioRef.current.volume = 0.5; // Громкость 50%
+      audioRef.current.volume = 0.5;
       audioRef.current.play()
         .then(() => setIsMusicPlaying(true))
-        .catch(e => console.log("Автовоспроизведение заблокировано браузером:", e));
+        .catch(e => console.log("Автовоспроизведение заблокировано:", e));
     }
     
     setTimeout(() => {
       setIsOpened(true);
       setIsOpening(false);
       
-      // Запускаем красивое конфетти из библиотеки
       confetti({
         particleCount: 150,
         spread: 70,
@@ -35,7 +35,6 @@ function App() {
     }, 800);
   };
 
-  // Переключение музыки (пауза / воспроизведение)
   const toggleMusic = () => {
     if (!audioRef.current) return;
     
@@ -52,7 +51,6 @@ function App() {
   const handleReset = () => {
     setIsOpened(false);
     setIsOpening(false);
-    // Останавливаем музыку при сбросе
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -60,7 +58,6 @@ function App() {
     }
   };
 
-  // Generate floating hearts
   const hearts = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
@@ -69,7 +66,6 @@ function App() {
     delay: Math.random() * 10,
   }));
 
-  // Generate sparkles
   const sparkles = Array.from({ length: 10 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
@@ -80,12 +76,11 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Фоновая музыка (положите файл music.mp3 в папку public) */}
       <audio ref={audioRef} src={`${import.meta.env.BASE_URL}music.mp3`} loop />
       
       <div className="bg-glow"></div>
       
-      {/* Кнопка управления музыкой (появляется после открытия сердца) */}
+      {/* Кнопка управления музыкой с SVG-иконками */}
       {isOpened && (
         <button 
           onClick={toggleMusic} 
@@ -93,11 +88,21 @@ function App() {
           aria-label={isMusicPlaying ? "Пауза" : "Играть"}
           title={isMusicPlaying ? "Пауза" : "Играть"}
         >
-          {isMusicPlaying ? '⏸️' : '▶️'}
+          {isMusicPlaying ? (
+            // Иконка паузы
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+          ) : (
+            // Иконка воспроизведения
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          )}
         </button>
       )}
       
-      {/* Floating hearts */}
       <div className="floating-hearts">
         {hearts.map((heart) => (
           <div
@@ -115,7 +120,6 @@ function App() {
         ))}
       </div>
 
-      {/* Sparkles */}
       <div className="sparkles">
         {sparkles.map((s) => (
           <div
@@ -133,7 +137,6 @@ function App() {
         ))}
       </div>
 
-      {/* Main content */}
       <div className="content-wrapper">
         {!isOpened ? (
           <>
@@ -203,24 +206,41 @@ function App() {
               <div className="deco-heart deco-heart-tr">💖</div>
               <div className="deco-heart deco-heart-bl">💖</div>
               <div className="deco-heart deco-heart-br">💖</div>
-              
-              {/* Подпись под фото */}
               <p className="photo-caption">Наш особенный момент ✨</p>
             </div>
 
             <h2 className="love-title shimmer-text">Моя любимая! 💕</h2>
 
-            <p className="love-message love-message-delay-1">
-              Ты — самое прекрасное, что случилось в моей жизни ✨
-            </p>
+            {/* Текст с эффектом печатной машинки */}
+            <TypeAnimation
+              sequence={['Ты — самое прекрасное, что случилось в моей жизни ✨']}
+              wrapper="p"
+              speed={50}
+              className="love-message"
+              repeat={0}
+              cursor={false}
+              startDelay={800}
+            />
 
-            <p className="love-message love-message-delay-2">
-              Каждый день с тобой — это подарок 🎁
-            </p>
+            <TypeAnimation
+              sequence={['Каждый день с тобой — это подарок 🎁']}
+              wrapper="p"
+              speed={50}
+              className="love-message"
+              repeat={0}
+              cursor={false}
+              startDelay={2000}
+            />
 
-            <p className="love-message-final">
-              Люблю тебя бесконечно! ❤️
-            </p>
+            <TypeAnimation
+              sequence={['Люблю тебя бесконечно! ❤️']}
+              wrapper="p"
+              speed={50}
+              className="love-message-final"
+              repeat={0}
+              cursor={false}
+              startDelay={3200}
+            />
 
             <button onClick={handleReset} className="reset-button">
               🔄 Ещё раз
