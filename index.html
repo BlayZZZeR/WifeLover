@@ -7,8 +7,8 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 100%; height: 100%; overflow: hidden; }
-      body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff6b9d" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
       }
       #root { width: 100%; height: 100%; }
@@ -24,8 +24,8 @@
         background: radial-gradient(ellipse at center, rgba(255,105,180,0.15) 0%, transparent 70%);
         pointer-events: none;
       }
-      
-      /* ========== Кнопка музыки ========== */
+
+      /* Кнопка музыки */
       .music-button {
         position: fixed; top: 20px; right: 20px;
         width: 50px; height: 50px; border-radius: 50%;
@@ -43,8 +43,8 @@
         border-color: rgba(251, 207, 232, 0.9);
         box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
       }
-      
-      /* ========== Фоновые элементы ========== */
+
+      /* Фон */
       .floating-hearts, .sparkles {
         position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
       }
@@ -60,17 +60,20 @@
         0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
         50% { opacity: 1; transform: scale(1) rotate(180deg); }
       }
-      
-      /* ========== Контент ========== */
+
+      /* Контент */
       .content-wrapper {
         position: relative; z-index: 10;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-align: center; max-height: 100vh; padding: 1rem; overflow-y: auto;
+        text-align: center; max-height: 100vh; padding: 1rem;
+        overflow-y: auto; overflow-x: hidden;
       }
       .title {
-        color: white; font-size: 2rem; margin-bottom: 2rem;
+        color: white; font-size: 2rem; margin-bottom: 1rem;
         font-family: Georgia, serif; font-style: italic;
       }
+      @media (min-width: 768px) { .title { font-size: 2.25rem; } }
+
       .shimmer-text {
         background: linear-gradient(90deg, #ff6b9d, #ffa8cc, #ff6b9d, #c44569, #ff6b9d);
         background-size: 200% auto;
@@ -82,152 +85,98 @@
         0% { background-position: -200% center; }
         100% { background-position: 200% center; }
       }
-      
-      /* ========== МЕДАЛЬОН ========== */
-      .locket-container {
-        perspective: 2000px;
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: center;
-        /* Даем место, чтобы крышка при открытии не обрезалась */
-        padding: 20px 0;
-      }
-      
-      .locket {
-        position: relative;
-        width: 280px;
-        height: 280px;
-        transform-style: preserve-3d;
-        cursor: pointer;
+
+      /* Canvas с 3D сердцем */
+      .canvas-wrapper {
+        width: 340px; height: 340px;
+        transition: all 1.2s cubic-bezier(0.6, 0, 0.4, 1);
+        z-index: 5;
       }
       @media (min-width: 768px) {
-        .locket { width: 340px; height: 340px; }
+        .canvas-wrapper { width: 420px; height: 420px; }
       }
-      .locket.open { cursor: default; }
-      
-      /* Внутренняя часть медальона (фото) */
-      .locket-inside {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.8s ease 0.8s;
-        transform-style: preserve-3d;
+      .canvas-wrapper.shrunk {
+        width: 0; height: 0; opacity: 0; margin: 0;
       }
-      .locket.open .locket-inside {
-        opacity: 1;
+      .canvas-wrapper canvas {
+        width: 100% !important;
+        height: 100% !important;
+        outline: none;
       }
-      
-      .locket-photo-frame {
-        width: 78%;
-        height: 78%;
+
+      .click-hint {
+        margin-top: -30px;
+        color: #fbcfe8; font-size: 0.95rem;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        white-space: nowrap;
+      }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+      /* Фото в форме сердца */
+      .photo-heart {
+        width: 220px; height: 220px;
         clip-path: url(#heartClip);
         -webkit-clip-path: url(#heartClip);
         overflow: hidden;
-        filter: 
-          drop-shadow(0 0 20px rgba(255, 105, 180, 0.9))
-          drop-shadow(0 0 40px rgba(255, 215, 0, 0.5));
         background: #fbcfe8;
-        /* Плавное «проявление» фото */
-        animation: photoReveal 0.8s ease 1s both;
+        filter:
+          drop-shadow(0 0 20px rgba(255, 105, 180, 0.8))
+          drop-shadow(0 0 40px rgba(255, 215, 0, 0.45));
+        animation: photoReveal 0.9s ease both;
+        margin-bottom: 0.5rem;
+      }
+      @media (min-width: 768px) {
+        .photo-heart { width: 280px; height: 280px; }
       }
       @keyframes photoReveal {
-        0% { transform: scale(0.85); opacity: 0; }
+        0% { transform: scale(0.6); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
       }
-      .locket-photo {
-        width: 100%; height: 100%;
-        object-fit: cover; display: block;
+      .photo-heart-img {
+        width: 100%; height: 100%; object-fit: cover; display: block;
       }
-      .locket-photo-frame .photo-fallback {
+      .photo-fallback-heart {
         width: 100%; height: 100%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 5rem;
+        font-size: 6rem;
         background: linear-gradient(135deg, #f472b6, #e11d48);
       }
-      
-      /* Крышка медальона */
-      .locket-lid {
-        position: absolute;
-        inset: 0;
-        transform-origin: left center;
-        transition: transform 1.8s cubic-bezier(0.6, 0, 0.4, 1);
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
+      .photo-caption {
+        color: #fbcfe8; font-size: 0.875rem;
+        font-style: italic; opacity: 0.85;
+        margin-bottom: 1.25rem;
       }
-      .locket.open .locket-lid {
-        transform: rotateY(-170deg);
-      }
-      
-      .heart-glow {
-        position: absolute; inset: 5%; border-radius: 50%;
-        background: rgba(236, 72, 153, 0.35); filter: blur(30px);
-        transform: scale(1.5);
-        transition: transform 0.5s;
-      }
-      .locket:hover .heart-glow { transform: scale(1.7); }
-      
-      .heart-svg {
-        width: 100%; height: 100%;
-        filter: drop-shadow(0 20px 30px rgba(0,0,0,0.4));
-        transform-style: preserve-3d;
-      }
-      
-      .locket:not(.open) .heart-svg {
-        animation: heartbeat 1.8s ease-in-out infinite;
-      }
-      @keyframes heartbeat {
-        0%, 100% { transform: scale(1); }
-        10% { transform: scale(1.08); }
-        20% { transform: scale(1); }
-        30% { transform: scale(1.05); }
-        40% { transform: scale(1); }
-      }
-      
-      .click-hint {
-        position: absolute; bottom: -55px; left: 50%; transform: translateX(-50%);
-        color: #fbcfe8; font-size: 0.9rem;
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        white-space: nowrap;
-        pointer-events: none;
-      }
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-      
-      /* ========== Текст после открытия ========== */
+
       .revealed-content {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-align: center; padding: 0 1rem; max-width: 32rem; margin: 0 auto;
-        animation: revealContent 1.2s ease-out forwards;
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; padding: 0 1rem; max-width: 34rem; margin: 0 auto;
+        animation: revealContent 1s ease-out forwards;
       }
       @keyframes revealContent {
-        0% { opacity: 0; transform: translateY(30px); }
+        0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
       }
+
       .love-title {
         font-size: 1.75rem; font-weight: bold; margin-bottom: 1rem;
         font-family: Georgia, serif; font-style: italic;
       }
-      @media (min-width: 768px) { .love-title { font-size: 2.5rem; } }
-      
+      @media (min-width: 768px) { .love-title { font-size: 2.25rem; } }
+
       .love-message {
-        color: #fce7f3; font-size: 1rem; margin-bottom: 0.75rem; line-height: 1.75;
-        min-height: 1.75em;
+        color: #fce7f3; font-size: 1rem; margin-bottom: 0.75rem;
+        line-height: 1.75; min-height: 1.75em;
       }
-      @media (min-width: 768px) { .love-message { font-size: 1.25rem; } }
-      
+      @media (min-width: 768px) { .love-message { font-size: 1.2rem; } }
+
       .love-message-final {
         color: #fce7f3; font-size: 1.15rem; margin-bottom: 2rem;
         font-family: Georgia, serif; font-style: italic;
         min-height: 1.75em;
       }
-      @media (min-width: 768px) { .love-message-final { font-size: 1.5rem; } }
-      
+      @media (min-width: 768px) { .love-message-final { font-size: 1.4rem; } }
+
       .reset-button {
         margin-top: 1rem; padding: 0.75rem 1.5rem;
         background: linear-gradient(to right, #ec4899, #e11d48);
@@ -245,10 +194,10 @@
         0% { opacity: 0; transform: translateY(30px); }
         100% { opacity: 1; transform: translateY(0); }
       }
-      
+
       @media (max-width: 600px) {
         .music-button { width: 42px; height: 42px; top: 12px; right: 12px; }
-        .title { font-size: 1.5rem; margin-bottom: 1rem; }
+        .title { font-size: 1.5rem; }
       }
     </style>
   </head>
