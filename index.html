@@ -25,7 +25,6 @@
         pointer-events: none;
       }
 
-      /* Кнопка музыки */
       .music-button {
         position: fixed; top: 20px; right: 20px;
         width: 50px; height: 50px; border-radius: 50%;
@@ -44,7 +43,6 @@
         box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
       }
 
-      /* Фон */
       .floating-hearts, .sparkles {
         position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
       }
@@ -61,7 +59,6 @@
         50% { opacity: 1; transform: scale(1) rotate(180deg); }
       }
 
-      /* Контент */
       .content-wrapper {
         position: relative; z-index: 10;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -86,14 +83,13 @@
         100% { background-position: 200% center; }
       }
 
-      /* Canvas с 3D сердцем */
       .canvas-wrapper {
-        width: 340px; height: 340px;
-        transition: all 1.2s cubic-bezier(0.6, 0, 0.4, 1);
+        width: 400px; height: 400px;
+        transition: all 1.5s cubic-bezier(0.6, 0, 0.4, 1);
         z-index: 5;
       }
       @media (min-width: 768px) {
-        .canvas-wrapper { width: 420px; height: 420px; }
+        .canvas-wrapper { width: 500px; height: 500px; }
       }
       .canvas-wrapper.shrunk {
         width: 0; height: 0; opacity: 0; margin: 0;
@@ -105,48 +101,12 @@
       }
 
       .click-hint {
-        margin-top: -30px;
+        margin-top: -40px;
         color: #fbcfe8; font-size: 0.95rem;
         animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         white-space: nowrap;
       }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-      /* Фото в форме сердца */
-      .photo-heart {
-        width: 220px; height: 220px;
-        clip-path: url(#heartClip);
-        -webkit-clip-path: url(#heartClip);
-        overflow: hidden;
-        background: #fbcfe8;
-        filter:
-          drop-shadow(0 0 20px rgba(255, 105, 180, 0.8))
-          drop-shadow(0 0 40px rgba(255, 215, 0, 0.45));
-        animation: photoReveal 0.9s ease both;
-        margin-bottom: 0.5rem;
-      }
-      @media (min-width: 768px) {
-        .photo-heart { width: 280px; height: 280px; }
-      }
-      @keyframes photoReveal {
-        0% { transform: scale(0.6); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
-      }
-      .photo-heart-img {
-        width: 100%; height: 100%; object-fit: cover; display: block;
-      }
-      .photo-fallback-heart {
-        width: 100%; height: 100%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 6rem;
-        background: linear-gradient(135deg, #f472b6, #e11d48);
-      }
-
-      .photo-caption {
-        color: #fbcfe8; font-size: 0.875rem;
-        font-style: italic; opacity: 0.85;
-        margin-bottom: 1.25rem;
-      }
 
       .revealed-content {
         display: flex; flex-direction: column; align-items: center;
@@ -198,6 +158,7 @@
       @media (max-width: 600px) {
         .music-button { width: 42px; height: 42px; top: 12px; right: 12px; }
         .title { font-size: 1.5rem; }
+        .canvas-wrapper { width: 300px; height: 300px; }
       }
     </style>
   </head>
