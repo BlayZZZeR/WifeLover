@@ -168,7 +168,7 @@ function App() {
             <div className="photo-frame">
               <div className="photo-container">
                 <img
-                  src="https://image.qwenlm.ai/generated-images/9311da62-5664-4c75-a6e1-442b1a066d6e/_result.png"
+                  src="/images/love-photo.jpg"
                   alt="Наша любовь"
                   className="photo-img"
                   onError={(e) => {
