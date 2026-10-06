@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/love-surprise/', // Замени на имя твоего репозитория
+  base: '/WifeLover/',
   server: {
     host: "0.0.0.0",
     port: 3000,

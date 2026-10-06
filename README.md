@@ -1,66 +1,12 @@
-# 💝 Сюрприз для любимой
+# 💝 WifeLover — Сюрприз для любимой
 
 Романтическое веб-приложение с анимированным сердцем, которое раскрывается при клике и показывает ваше послание.
 
-## 🚀 Деплой на GitHub Pages
+🌐 **Онлайн:** https://blayzzzer.github.io/WifeLover/
 
-### Шаг 1: Создай репозиторий на GitHub
+## 🚀 Деплой
 
-1. Зайди на [github.com](https://github.com)
-2. Нажми "New repository"
-3. Назови репозиторий (например, `love-surprise`)
-4. Сделай его **Public** (публичным)
-5. НЕ ставь галочку "Add a README file"
-6. Нажми "Create repository"
-
-### Шаг 2: Загрузи код в репозиторий
-
-Открой терминал в папке проекта и выполни:
-
-```bash
-# Инициализация git
-git init
-
-# Добавь все файлы
-git add .
-
-# Первый коммит
-git commit -m "Initial commit 💝"
-
-# Добавь удалённый репозиторий (замени USERNAME и REPO_NAME)
-git remote add origin https://github.com/USERNAME/REPO_NAME.git
-
-# Отправь код на GitHub
-git branch -M main
-git push -u origin main
-```
-
-### Шаг 3: Включи GitHub Pages
-
-1. Зайди в свой репозиторий на GitHub
-2. Перейди в **Settings** → **Pages**
-3. В разделе "Source" выбери **GitHub Actions**
-4. После первого push автоматически запустится деплой
-5. Через 1-2 минуты сайт будет доступен по адресу:
-   ```
-   https://USERNAME.github.io/REPO_NAME/
-   ```
-
-### Шаг 4: Обнови имя репозитория в конфиге
-
-Открой файл `vite.config.js` и замени `/love-surprise/` на имя твоего репозитория:
-
-```javascript
-base: '/имя-твоего-репозитория/',
-```
-
-Затем запуш изменения:
-
-```bash
-git add .
-git commit -m "Update base path"
-git push
-```
+Автоматический деплой настроен через GitHub Actions. При каждом push в ветку `main` сайт автоматически обновляется.
 
 ## 🖼️ Как заменить изображение
 
@@ -71,7 +17,7 @@ git push
 
 ```bash
 git add public/images/love-photo.jpg
-git commit -m "Add our photo 💕"
+git commit -m "💕 Добавил наше фото"
 git push
 ```
 
@@ -101,7 +47,7 @@ git push
 
 ```bash
 git add .
-git commit -m "Update messages 💌"
+git commit -m "💌 Обновил послания"
 git push
 ```
 
